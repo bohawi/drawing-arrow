@@ -27,25 +27,27 @@ define(function (require) {
 		}
 
 		// draw white line
-		// this._drawStroke({
-		// 	startPoint: startPoint,
-		// 	endPoint: endPoint,
-		// 	controlPoint: controlPoint,
-		// 	startRadius: this.options.startRadius + 2,
-		// 	endRadius: this.options.endRadius + 2,
-		// 	color: this.options.outlineColor
-		// });
+		this._drawQuadratic({
+			startPoint: startPoint,
+			endPoint: endPoint,
+			controlPoint: controlPoint,
+			startRadius: this.options.startRadius + 2,
+			endRadius: this.options.endRadius + 2,
+			color: this.options.outlineColor
+		});
 
-		// this.ctx.save();
+		// TODO: Don't access ctx from plugins
+		this.ctx.save();
 
-		// this._drawArrowHead({
-		// 	location: endPoint,
-		// 	rotate: tangent,
-		// 	color: this.options.outlineColor,
-		// 	lineWidth: 9
-		// });
+		this._drawArrowHead({
+			location: endPoint,
+			rotate: tangent,
+			color: this.options.outlineColor,
+			lineWidth: 9
+		});
 
-		// this.ctx.restore();
+		// TODO: Don't access ctx from plugins
+		this.ctx.restore();
 
 		// draw orange line
 		this._drawQuadratic({
@@ -57,13 +59,46 @@ define(function (require) {
 			color: this.options.color
 		});
 
-		// this._drawArrowHead({
-		// 	location: endPoint,
-		// 	rotate: tangent,
-		// 	color: this.options.color,
-		// 	lineWidth: 5
-		// });
+		this._drawArrowHead({
+			location: endPoint,
+			rotate: tangent,
+			color: this.options.color,
+			lineWidth: 5
+		});
 
 		this.$element.html($el);
+	};
+
+	/**
+	 * draw the arrowhead
+	 * @param {Object} options
+	 * @param {Array} options.location [x,y] coordinates of arrowhead
+	 * @param {Number} options.rotate Radians to rotate arrowhead
+	 * @param {String} options.color
+	 * @param {Number} options.lineWidth
+	 */
+	Drawing.prototype._drawArrowHead = function _drawArrowHead(options) {
+		// draw arrow head
+		// TODO: This method shouldn't access ctx
+		// That should be the core's responsibility
+		this.ctx.beginPath();
+		this.ctx.translate(options.location[0], options.location[1]);
+		this.ctx.rotate(options.rotate);
+		if (this.options.scale) {
+			this.ctx.scale(this.options.scale, this.options.scale);
+		}
+		this.ctx.moveTo(-7.5, 11.25);
+		this.ctx.quadraticCurveTo(-7.5, 7.5, 0, 0);
+		this.ctx.quadraticCurveTo(6, 7.5, 7.5, 12.75);
+		this.ctx.quadraticCurveTo(2.25, 6, 0, 3.75);
+		this.ctx.quadraticCurveTo(-2.25, 6, -7.5, 11.25);
+
+		this.ctx.strokeStyle = options.color;
+		this.ctx.fillStyle = options.color;
+		this.ctx.lineWidth = options.lineWidth;
+		this.ctx.lineCap = 'round';
+		this.ctx.lineJoin = 'round';
+		this.ctx.stroke();
+		this.ctx.fill();
 	};
 });

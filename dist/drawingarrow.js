@@ -430,12 +430,7 @@ function ($) {
 	var Drawing = function (element, options) {
 
 		this.$element = $(element);
-		this.$canvas = $('<canvas />');
-		this.canvas = this.$canvas[0];
-		this.ctx = this.canvas.getContext('2d');
 		this.options = options;
-
-		this._setResolution();
 
 	};
 
@@ -480,92 +475,6 @@ function ($) {
 			this.$element.trigger('destroyed.fu.drawing');
 		},
 
-		getElement: function getElement() {
-			return this.$canvas;
-		},
-
-		_directionMap: function _directionMap(direction, options) {
-			var pb;
-			var pl;
-			var pr;
-			var pt;
-			var w;
-			var h;
-
-			options = options || {};
-
-			if (options.noPadding) {
-				options.paddingBottom = 0;
-				options.paddingLeft = 0;
-				options.paddingRight = 0;
-				options.paddingTop = 0;
-			}
-
-			pb = options.paddingBottom || this.options.paddingBottom;
-			pl = options.paddingLeft || this.options.paddingLeft;
-			pr = options.paddingRight || this.options.paddingRight;
-			pt = options.paddingTop || this.options.paddingTop;
-			w = this.options.width;
-			h = this.options.height;
-
-			switch (direction) {
-			case 'nw':
-				return [pl, pt];
-			case 'n':
-				return [w / 2, pt];
-			case 'ne':
-				return [w - pr, pt];
-			case 'e':
-				return [w - pr, h / 2];
-			case 'se':
-				return [w - pr, h - pb];
-			case 's':
-				return [w / 2, h - pb];
-			case 'sw':
-				return [pl, h - pb];
-			case 'w':
-				return [pl, h / 2];
-			default:
-				return false;
-			}
-		},
-
-		/**
-		 * Create a quadratic brush stroke - only supports a single control-point
-		 * @param {Object} options
-		 * @param {Array} options.startPoint [x,y] starting coordinates
-		 * @param {Array} options.endPoint [x,y] ending coordinates
-		 * @param {Array} options.controlPoint [x,y] control point coordinates
-		 * @param {Function} options.formula The formula used to create the curve
-		 * @param {Number} options.startRadius
-		 * @param {Number} options.endRadius
-		 * @param {String} options.color
-		 */
-		_drawQuadratic: function _drawQuadratic(options) {
-			var startPoint = options.startPoint;
-			var endPoint = options.endPoint;
-			var controlPoint = options.controlPoint;
-			var iterator = 1 / (options.iterator || Math.max(this.options.height, this.options.width));
-			var x;
-			var y;
-			var radius;
-
-			for (var i = 0; i <= 1; i += iterator) {
-				x = this._formula(i, startPoint[0], controlPoint[0], endPoint[0]);
-				y = this._formula(i, startPoint[1], controlPoint[1], endPoint[1]);
-				radius = options.startRadius + (options.endRadius - options.startRadius) * i;
-
-				this._paint({
-					centerX: x,
-					centerY: y,
-					radius: radius,
-					color: options.color
-				});
-			}
-
-			return this;
-		},
-
 		/**
 		 * First derivative of quadratic formula - Find the tangent slope
 		 * @param {Number} t 0-1
@@ -589,56 +498,6 @@ function ($) {
 
 			return p0 * Math.pow(x, 2) + 2 * p1 * x * t + p2 * Math.pow(t, 2);
 			// return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
-		},
-
-		/**
-		 * Draw a circle
-		 * @param {Object} options
-		 * @param {Number} options.centerX
-		 * @param {Number} options.centerY
-		 * @param {Number} options.radius
-		 * @param {String} options.color
-		 */
-		_paint: function _paint(options) {
-			this.ctx.beginPath();
-			this.ctx.arc(options.centerX, options.centerY, options.radius, 0, 2 * Math.PI, false);
-			this.ctx.fillStyle = options.color || this.options.color;
-			this.ctx.fill();
-		},
-
-		/**
-		 * To support high dpi screens we have to render at the size of the screen and resize down to display size
-		 * Code inspired by http://www.html5rocks.com/en/tutorials/canvas/hidpi/
-		 */
-		_setResolution: function _setResolution() {
-			var $canvas = this.$canvas;
-			var canvas = this.canvas;
-			var ctx = this.ctx;
-
-			$canvas.removeAttr('style');
-			var displayHeight = this.options.height;
-			var displayWidth = this.options.width;
-			var devicePixelRatio = window.devicePixelRatio || 1;
-			var backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
-					ctx.mozBackingStorePixelRatio ||
-					ctx.msBackingStorePixelRatio ||
-					ctx.oBackingStorePixelRatio ||
-					ctx.backingStorePixelRatio || 1;
-			var ratio = devicePixelRatio / backingStoreRatio;
-			var doScale = devicePixelRatio !== backingStoreRatio;
-
-			canvas.height = displayHeight * ratio;
-			canvas.width = displayWidth * ratio;
-
-			canvas.style.width = displayWidth + 'px';
-			canvas.style.height = displayHeight + 'px';
-
-			if (doScale) {
-				// scale the context to counter the fact that we've manually scaled our canvas element
-				ctx.scale(ratio, ratio);
-			}
-
-			return this;
 		}
 	};
 
@@ -686,24 +545,7 @@ define('drawing',['drawing-logic', 'jquery'], function (Drawing, $) {
 		return (methodReturn === undefined) ? $set : methodReturn;
 	};
 
-	$.fn.drawing.defaults = {
-		// controlPointWeight: 1,
-		color: '#e67c2e',
-		controlPoint: 'se',
-		endPoint: 'ne',
-		endRadius: 1.5,
-		height: 200,
-		outlineColor: '#ffffff',
-		paddingBottom: 5,
-		paddingLeft: 5,
-		paddingRight: 5,
-		paddingTop: 5,
-		shape: 'arrow',
-		startPoint: 'sw',
-		startRadius: 2,
-		target: void 0,
-		width: 200
-	};
+	$.fn.drawing.defaults = {};
 
 	$.fn.drawing.Constructor = Drawing;
 
@@ -752,25 +594,27 @@ define('drawingarrow',['require','jquery','drawing'],function (require) {
 		}
 
 		// draw white line
-		// this._drawStroke({
-		// 	startPoint: startPoint,
-		// 	endPoint: endPoint,
-		// 	controlPoint: controlPoint,
-		// 	startRadius: this.options.startRadius + 2,
-		// 	endRadius: this.options.endRadius + 2,
-		// 	color: this.options.outlineColor
-		// });
+		this._drawQuadratic({
+			startPoint: startPoint,
+			endPoint: endPoint,
+			controlPoint: controlPoint,
+			startRadius: this.options.startRadius + 2,
+			endRadius: this.options.endRadius + 2,
+			color: this.options.outlineColor
+		});
 
-		// this.ctx.save();
+		// TODO: Don't access ctx from plugins
+		this.ctx.save();
 
-		// this._drawArrowHead({
-		// 	location: endPoint,
-		// 	rotate: tangent,
-		// 	color: this.options.outlineColor,
-		// 	lineWidth: 9
-		// });
+		this._drawArrowHead({
+			location: endPoint,
+			rotate: tangent,
+			color: this.options.outlineColor,
+			lineWidth: 9
+		});
 
-		// this.ctx.restore();
+		// TODO: Don't access ctx from plugins
+		this.ctx.restore();
 
 		// draw orange line
 		this._drawQuadratic({
@@ -782,14 +626,47 @@ define('drawingarrow',['require','jquery','drawing'],function (require) {
 			color: this.options.color
 		});
 
-		// this._drawArrowHead({
-		// 	location: endPoint,
-		// 	rotate: tangent,
-		// 	color: this.options.color,
-		// 	lineWidth: 5
-		// });
+		this._drawArrowHead({
+			location: endPoint,
+			rotate: tangent,
+			color: this.options.color,
+			lineWidth: 5
+		});
 
 		this.$element.html($el);
+	};
+
+	/**
+	 * draw the arrowhead
+	 * @param {Object} options
+	 * @param {Array} options.location [x,y] coordinates of arrowhead
+	 * @param {Number} options.rotate Radians to rotate arrowhead
+	 * @param {String} options.color
+	 * @param {Number} options.lineWidth
+	 */
+	Drawing.prototype._drawArrowHead = function _drawArrowHead(options) {
+		// draw arrow head
+		// TODO: This method shouldn't access ctx
+		// That should be the core's responsibility
+		this.ctx.beginPath();
+		this.ctx.translate(options.location[0], options.location[1]);
+		this.ctx.rotate(options.rotate);
+		if (this.options.scale) {
+			this.ctx.scale(this.options.scale, this.options.scale);
+		}
+		this.ctx.moveTo(-7.5, 11.25);
+		this.ctx.quadraticCurveTo(-7.5, 7.5, 0, 0);
+		this.ctx.quadraticCurveTo(6, 7.5, 7.5, 12.75);
+		this.ctx.quadraticCurveTo(2.25, 6, 0, 3.75);
+		this.ctx.quadraticCurveTo(-2.25, 6, -7.5, 11.25);
+
+		this.ctx.strokeStyle = options.color;
+		this.ctx.fillStyle = options.color;
+		this.ctx.lineWidth = options.lineWidth;
+		this.ctx.lineCap = 'round';
+		this.ctx.lineJoin = 'round';
+		this.ctx.stroke();
+		this.ctx.fill();
 	};
 });
 
