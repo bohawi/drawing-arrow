@@ -1,0 +1,257 @@
+{
+	"blanket_qunit": {
+		"simple": {
+			"options": {
+				"urls": ["test/index.html?coverage=true&gruntReport"],
+				"threshold": 95
+			}
+		},
+		"full": {
+			"options": {
+				"urls": [
+
+
+
+					"http://localhost:&lt;%= express.server.options.port %&gt;/test/index.html?jquery=1.11&coverage=true&gruntReport","http://localhost:&lt;%= express.server.options.port %&gt;/test/index.html?jquery=2.0&coverage=true&gruntReport","http://localhost:&lt;%= express.server.options.port %&gt;/test/index.html?jquery=2.1&coverage=true&gruntReport"
+				],
+				"threshold": 95
+			}
+		}
+	},
+	"jshint": {
+		"options": {
+			"jshintrc": ".jshintrc"
+		},
+		"source": ["src/**/*.js"],
+		"tests": ["test/**/*.js"]
+	},
+	"requirejs": {
+		"amd": {
+			"options": {
+				"baseUrl": "src",
+				"name": "drawingarrow",
+				"out": "dist/drawingarrow-amd.js",
+				"optimize": "none",
+				"optimizeCss": "none",
+				"normalizeDirDefines": "all",
+				"wrap": false,
+				"paths": {
+					"jquery": "empty:",
+
+
+
+
+
+
+					"drawing": "../bower_components/drawing/dist/drawing-amd",
+					"drawingarrow": "drawingarrow-plugin"
+				},
+				"exclude": ["jquery"],
+				"shim": {
+
+				},
+				"stubModules": ["text"]
+			}
+		},
+		"wrapped": {
+			"options": {
+				"baseUrl": "src",
+				"name": "drawingarrow",
+				"include": ["almond"],
+				"out": "dist/drawingarrow.js",
+				"optimize": "none",
+				"optimizeCss": "none",
+				"normalizeDirDefines": "all",
+				"wrap": true,
+				"paths": {
+					"almond": "../bower_components/almond/almond",
+					"jquery": "empty:",
+
+
+
+
+
+
+					"drawing": "../bower_components/drawing/dist/drawing-amd",
+					"drawingarrow": "drawingarrow-plugin"
+				},
+				"exclude": ["jquery"],
+				"shim": {
+
+				},
+				"stubModules": ["text"]
+			}
+		}
+	},
+	"uglify": {
+		"all": {
+			"options": {
+				"sourceMap": true,
+				"preserveComments": false
+			},
+			"files": {
+				"dist/&lt;%= pkg.name %&gt;-amd.min.js": ["dist/&lt;%= pkg.name %&gt;-amd.js"],
+				"dist/&lt;%= pkg.name %&gt;.min.js": ["dist/&lt;%= pkg.name %&gt;.js"]
+			}
+		}
+	},
+	"less": {
+		"compile": {
+			"options": {
+				"compress": false,
+				"cleancss": false
+			},
+			"files": {
+				"dist/css/&lt;%= pkg.name %&gt;.css": "src/less/&lt;%= pkg.name %&gt;.less"
+			}
+		},
+		"compilemin": {
+			"options": {
+				"compress": true,
+				"cleancss": true
+			},
+			"files": {
+				"dist/css/&lt;%= pkg.name %&gt;.min.css": "src/less/&lt;%= pkg.name %&gt;.less"
+			}
+		}
+	},
+	"clean": {
+		"prebuild":["dist/**"],
+		"build": ["dist/build.txt"],
+		"doc": ["doc/**"]
+	},
+	"compress": {
+		"zip": {
+			"options": {
+				"mode": "zip",
+				"archive": "dist/&lt;%= pkg.name %&gt;-&lt;%= pkg.version %&gt;.zip"
+			},
+			"files": [{
+				"expand": true,
+				"cwd": "dist/",
+				"src": ["**"]
+			}]
+		}
+	},
+	"jsdoc": {
+		"dist": {
+			"src": ["src/*.js"],
+			"options": {
+				"destination": "doc",
+				"template": "node_modules/element-generator-doctemplate/template/",
+				"configure": "node_modules/element-generator-doctemplate/template/jsdoc.conf.json"
+			}
+		}
+	},
+	"imagemin": {
+		"dynamic": {
+			"files": [{
+				"expand": true,
+				"cwd": "src/img/",
+				"src": ["**/*.{png,jpg,jpeg,gif}"],
+				"dest": "dist/img/"
+			}]
+		}
+	},
+	"copy": {
+		"images": {
+			"expand": true,
+			"cwd": "src/img/",
+			"src": ["**", "!**/*.{png,jpg,jpeg,gif}"],
+			"dest": "dist/img/"
+		}
+	},
+    "watch": {
+        "src": {
+            "options": {
+                "livereload": true
+            },
+            "files": ["src/**/*.js", "src/templates/*.html"],
+            "tasks": ["watch-src"]
+        },
+        "imgmin": {
+            "options": {
+                "livereload": true
+            },
+            "files": ["src/img/*.{png,jpg,jpeg,gif}"],
+            "tasks": ["imagemin"]
+        },
+        "img": {
+            "options": {
+                "livereload": true
+            },
+            "files": ["!src/img/*.{png,jpg,jpeg,gif}"],
+            "tasks": ["copy:images"]
+        },
+        "css": {
+            "options": {
+                "livereload": true
+            },
+            "files": ["src/less/*.less"],
+            "tasks": ["fullcss"]
+        },
+        "tests": {
+            "options": {
+                "livereload": true
+            },
+            "files": ["test/*"]
+        }
+    },
+	"complexity": {
+		"generic": {
+			"src": ["src/*.js"],
+			"options": {
+				"breakOnErrors": true,
+				"errorsOnly": false,
+				"cyclomatic": 10,
+				"halstead": 20,
+				"maintainability": 100
+			}
+		}
+	},
+	"filenames": {
+		"imageformats": {
+			"options": {
+				"valid": "\\.(gif|jpg|jpeg|png)$",
+				"error": "{filename} only jpg, png, or gif are supported"
+			},
+			"src": ["src/img/**/*"]
+		},
+		"imagenames": {
+			"options": {
+				"valid": "^&lt;%= pkg.name %&gt;-",
+				"error": "{filename} needs to be namespaced with \"&lt;%= pkg.name %&gt;-\""
+			},
+			"src": ["src/img/**/*"]
+		}
+	},
+	"regex-replace": {
+		"plugin-replace": {
+			"src": ["dist/&lt;%= pkg.name %&gt;-amd.js"],
+			"actions": [
+				{"search": "text!", "replace": "text-", "flags": "g"}
+			]
+		}
+	},
+	"express": {
+		"server": {
+			"options": {
+				"port": 3000,
+				"server": "./app.js"
+			}
+		}
+	},
+	"bump": {
+		"options": {
+			"files": ["package.json", "bower.json"],
+			"commit": true,
+			"commitMessage": "%VERSION%",
+			"commitFiles": ["package.json", "bower.json"],
+			"createTag": true,
+			"tagName": "%VERSION%",
+			"tagMessage": "%VERSION%",
+			"push": true,
+			"pushTo": "upstream"
+		}
+	}
+}

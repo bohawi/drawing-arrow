@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>DRAWINGARROW Example Page</title>
+    <style>
+    	body{
+    		padding:10px 15px;
+    	}
+
+    	.demo-button-wrap{
+    		margin:50px 0 0 0;
+    		padding:20px 0 0 0;
+    		border-top:1px dotted #ccc;
+    	}
+
+    	.demo-button-wrap .btn{
+    		margin-top:5px !important;
+    	}
+
+    	.demo-button-group{
+    		margin-bottom:10px;
+    	}
+    </style>
+    <script src="bower_components/requirejs/require.js"></script>
+
+    <script>
+        (function () {
+			var jqverParam = location.search.match(/[?&]jquery=(.*?)(?=&|$)/),
+					jqver = (jqverParam) ? jqverParam[1] : '1.11',
+					jqmain = (jqver === '2.0') ? '' : '/dist'
+			;
+
+
+
+			require(["utils/utils"], function (utils) {
+				var cssPaths = [];
+
+
+				cssPaths.push('dist/css/drawingarrow.css');
+				utils.makeCSSLinks(cssPaths);
+			});
+
+            require.config({
+				paths: {
+					jquery: 'bower_components/jquery-' + jqver + jqmain + '/jquery',
+                    drawing: 'bower_components/drawing/dist/drawing-amd',
+
+
+
+
+
+
+
+					'drawingarrow': 'dist/drawingarrow-amd'
+				},
+				shim: {
+
+
+
+
+				}
+			});
+        })();
+    </script>
+    <script>
+        require(['jquery', 'drawingarrow'], function($) {
+            $("#fixture").drawing('drawArrow');
+
+            // //See disable/enable/destroy methods in 'src/drawingarrow-logic.js'
+
+            // $('#btnDisable').on('click', function(){
+            // 	$("#fixture").drawingarrow('disable');
+            // });
+
+            // $('#btnEnable').on('click', function(){
+            // 	$("#fixture").drawingarrow('enable');
+            // });
+
+            // $('#btnDestroy').on('click', function(){
+            // 	$("#fixture").drawingarrow('destroy');
+            // });
+
+            // $('#btnCreate').on('click', function(){
+            // 	$("#fixture").drawingarrow();
+            // });
+        });
+    </script>
+</head>
+<body>
+    <div id="fixture"></div>
+    <div class="demo-button-wrap">
+		<div class="demo-button-group">
+			<button id="btnDestroy" class="btn">Destroy</button>
+			<button id="btnCreate" class="btn">Create</button>
+			<button id="btnDisable" class="btn">Disable</button>
+			<button id="btnEnable" class="btn">Enable</button>
+		</div>
+		<!--
+		<div class="demo-button-group">
+			<button id="btnGet" class="btn">Get</button>
+			<button id="btnSet" class="btn">Set</button>
+		</div>
+		-->
+    </div>
+	<script src="//localhost:35729/livereload.js"></script>
+</body>
+</html>

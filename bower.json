@@ -1,0 +1,35 @@
+{
+  "name": "drawingarrow",
+  "version": "0.0.0",
+  "main": [
+    "dist/drawingarrow-amd.js",
+    "dist/css/drawingarrow-responsive.css"
+  ],
+  "ignore": [
+    "doc",
+    "lib",
+    "src",
+    "test",
+    "utils",
+    ".gitignore",
+    ".jshintrc",
+    "Gruntfile.js",
+    "README.md",
+    "app.js",
+    "index.html"
+  ],
+  "private": true,
+  "dependencies": {
+    "drawing": "https://github.com/bohawi/drawing-core.git#~0.0"
+  },
+  "devDependencies": {
+    "blanket": "blanket#",
+    "qunit": "qunit#1.14.0",
+    "almond": "0.2.9",
+    "requirejs": "2.1.16"
+  },
+  "resolutions": {
+    "moment": "2.9.0",
+    "requirejs": "2.1.16"
+  }
+}
